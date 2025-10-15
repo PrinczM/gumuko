@@ -62,27 +62,6 @@ A teszt lefedettség report az alábbi helyen található build után:
 target/site/jacoco/index.html
 ```
 
-## 📁 Projekt Struktúra
-```
-gumuko/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── projekt/
-│   │   │       └── progtech/
-│   │   │           └── Main.java
-│   │   └── resources/
-│   │       └── logback.xml
-│   └── test/
-│       └── java/
-│           └── projekt/
-│               └── progtech/
-│                   └── AppTest.java
-├── .gitignore
-├── pom.xml
-└── README.md
-```
-
 ## 📝 Fejlesztési Ütemezés
 
 ### ✅ 1. védés (7. hét) - Alapok
