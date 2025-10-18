@@ -1,0 +1,50 @@
+package projekt.progtech;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+class PlayerTest {
+
+  @Test
+  void konstruktorJolBeallitjaAzErtekeket() {
+    // Given & When
+    Player jatekos = new Player("Béla", 'X');
+
+    // Then
+    assertEquals("Béla", jatekos.getNev());
+    assertEquals('X', jatekos.getSzimbolum());
+  }
+
+  @Test
+  void isXigazatAdVisszaHaXjatekos() {
+    // Given
+    Player jatekos = new Player("Béla", 'X');
+
+    // When & Then
+    assertTrue(jatekos.isX());
+    assertFalse(jatekos.isO());
+  }
+
+  @Test
+  void isOigazatAdVisszaHaOjatekos() {
+    // Given
+    Player jatekos = new Player("Gép", 'O');
+
+    // When & Then
+    assertTrue(jatekos.isO());
+    assertFalse(jatekos.isX());
+  }
+
+  @Test
+  void equalsIgazatAdVisszaHaKetJatekosAzonos() {
+    // Given
+    Player j1 = new Player("Béla", 'X');
+    Player j2 = new Player("Béla", 'X');
+
+    // When & Then
+    assertEquals(j1, j2);
+  }
+}

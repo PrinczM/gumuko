@@ -86,5 +86,5 @@ Princz Márió - Programozási Technológiák Beadandó 2025
 
 ## 📄 Licenc
 
-Ez egy egyetemi projekt.
+Egyetemi projekt.
 ```
