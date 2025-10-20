@@ -68,7 +68,7 @@ target/site/jacoco/index.html
 - [x] Maven projekt setup
 - [x] GitHub repository
 - [x] Alapvető osztályok
-- [x] Value Objects (Position, Player, Cell, Move)
+- [x] Value Objects (Position, Player)
 - [x] Board osztály
 - [x] Fájl-ba mentés/olvasás
 - [x] 80% teszt lefedettség
