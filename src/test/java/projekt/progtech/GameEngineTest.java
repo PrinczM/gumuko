@@ -2,6 +2,7 @@ package projekt.progtech;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -122,5 +123,46 @@ class GameEngineTest {
 
     // Then
     assertFalse(siker);
+  }
+  @Test
+  void atloBalraLeNyeresFelismeri() {
+    // Given - Átló balra le (↙)
+    engine.lepes(new Position(5, 5)); // X
+    engine.lepes(new Position(6, 5)); // O
+    engine.lepes(new Position(4, 6)); // X
+    engine.lepes(new Position(7, 5)); // O
+    engine.lepes(new Position(5, 7)); // X
+    engine.lepes(new Position(8, 5)); // O
+    engine.lepes(new Position(6, 4)); // X
+    engine.lepes(new Position(3, 7)); // O
+    engine.lepes(new Position(7, 3)); // X - GYŐZELEM átlósan balra le
+
+    // Then
+    assertTrue(engine.isJatekVege());
+    assertEquals('X', engine.getGyoztes().getSzimbolum());
+  }
+
+  @Test
+  void tablaSzelereNemLehetLerakni() {
+    // Given
+    engine.lepes(new Position(5, 5)); // Első lépés
+
+    // When - Tábla szélén kívül
+    Position kint = new Position(-1, 5);
+    boolean siker = engine.lepes(kint);
+
+    // Then
+    assertFalse(siker);
+  }
+
+  @Test
+  void jatekosValtasHelyesenMukodik() {
+    // Given & When
+    Player elsoJatekos = engine.getAktualisJatekos();
+    engine.lepes(new Position(5, 5));
+    Player masodikJatekos = engine.getAktualisJatekos();
+
+    // Then
+    assertNotEquals(elsoJatekos, masodikJatekos);
   }
 }

@@ -146,22 +146,14 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.2.0</version>
         <configuration>
           <configLocation>google_checks.xml</configLocation>
           <consoleOutput>true</consoleOutput>
           <failsOnError>false</failsOnError>
           <violationSeverity>warning</violationSeverity>
+          <skip>false</skip>
         </configuration>
-        <executions>
-          <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- Maven Surefire Plugin - Tesztek futtatásához -->

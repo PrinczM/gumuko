@@ -2,6 +2,7 @@ package projekt.progtech;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -46,5 +47,23 @@ class PlayerTest {
 
     // When & Then
     assertEquals(j1, j2);
+  }
+  @Test
+  void equalsHamisatAdVissza_HaNullal() {
+    // Given
+    Player jatekos = new Player("Béla", 'X');
+
+    // When & Then
+    assertNotEquals(null, jatekos);
+  }
+
+  @Test
+  void hashCodeMegegyezik_HaAKetJatekosAzonos() {
+    // Given
+    Player j1 = new Player("Béla", 'X');
+    Player j2 = new Player("Béla", 'X');
+
+    // When & Then
+    assertEquals(j1.hashCode(), j2.hashCode());
   }
 }

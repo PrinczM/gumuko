@@ -57,4 +57,32 @@ class PositionTest {
     assertTrue(eredmeny.contains("1"));
     assertTrue(eredmeny.contains("2"));
   }
+  @Test
+  void equalsHamisatAdVisszaHaNullal() {
+    // Given
+    Position poz = new Position(2, 3);
+
+    // When & Then
+    assertNotEquals(null, poz);
+  }
+
+  @Test
+  void equalsHamisatAdVisszaMasTipussal() {
+    // Given
+    Position poz = new Position(2, 3);
+    String masTipus = "nem Position";
+
+    // When & Then
+    assertNotEquals(masTipus, poz);
+  }
+
+  @Test
+  void hashCodeMegegyezikHaAKetPozicioMegegyezik() {
+    // Given
+    Position poz1 = new Position(2, 3);
+    Position poz2 = new Position(2, 3);
+
+    // When & Then
+    assertEquals(poz1.hashCode(), poz2.hashCode());
+  }
 }
