@@ -68,10 +68,10 @@ target/site/jacoco/index.html
 - [x] Maven projekt setup
 - [x] GitHub repository
 - [x] Alapvető osztályok
-- [ ] Value Objects (Position, Player, Cell, Move)
-- [ ] Board osztály
-- [ ] Fájl-ba mentés/olvasás
-- [ ] 80% teszt lefedettség
+- [x] Value Objects (Position, Player, Cell, Move)
+- [x] Board osztály
+- [x] Fájl-ba mentés/olvasás
+- [x] 80% teszt lefedettség
 
 ### ⏳ 2. védés (13. hét) - Teljes funkcionalitás
 - [ ] Teljes játéklogika
