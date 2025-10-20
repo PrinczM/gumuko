@@ -82,7 +82,7 @@ target/site/jacoco/index.html
 
 ## 👨‍💻 Fejlesztő
 
-Princz Márió - Programozási Technológiák Beadandó 2025
+Princz Márió
 
 ## 📄 Licenc
 
