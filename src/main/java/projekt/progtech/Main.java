@@ -101,7 +101,20 @@ public class Main {
       Player aktualis = engine.getAktualisJatekos();
 
       if (aktualis.isX()) {
-        // Humán játékos
+        // Felajánlunk mentést csak menet közben
+        System.out.print("Szeretnéd menteni a játékot most? (i/n): ");
+        java.util.Scanner scSave = new java.util.Scanner(System.in);
+        String v = scSave.nextLine().trim().toLowerCase();
+        if (v.equals("i") || v.equals("igen")) {
+          String fn = ui.bekerFajlnevet("Fájlnév (Enter = jatek.txt): ");
+          if (fileManager.ment(engine.getTabla(), fn)) {
+            ui.sikerUzenet("Játék sikeresen mentve!");
+          } else {
+            ui.hibaUzenet("Mentés sikertelen!");
+          }
+        }
+
+        // Humán játékos lépése
         boolean sikeresLepes = false;
         while (!sikeresLepes) {
           Position lepes = ui.bekerLepes(aktualis);
@@ -141,9 +154,6 @@ public class Main {
         engine.lepes(gepLepes);
         ui.gepLepese(gepLepes);
       }
-
-      // Játék mentése minden lépés után (opcionális)
-      // fileManager.ment(engine.getTabla(), "auto_save.txt");
     }
 
     // Játék vége
@@ -155,15 +165,10 @@ public class Main {
       ui.dontetlen();
     }
 
-    // High score mentése
-    HighScore.Eredmeny eredmeny;
-    if (engine.getGyoztes() == null) {
-      eredmeny = HighScore.Eredmeny.DRAW;
-    } else if (engine.getGyoztes().isX()) {
-      eredmeny = HighScore.Eredmeny.WIN;
-    } else {
-      eredmeny = HighScore.Eredmeny.LOSS;
-    }
+    // EREDMÉNY mentése HighScore-ba (automatikus) – de már nem ajánlunk fel fájlmentést
+    HighScore.Eredmeny eredmeny = (engine.getGyoztes() == null)
+        ? HighScore.Eredmeny.DRAW
+        : (engine.getGyoztes().isX() ? HighScore.Eredmeny.WIN : HighScore.Eredmeny.LOSS);
     repo.ment(new HighScore(
         engine.getHumanJatekos().getNev(),
         eredmeny,
@@ -173,20 +178,6 @@ public class Main {
         java.time.LocalDateTime.now()
     ));
 
-    // Mentés felajánlása
-    System.out.println();
-    System.out.print("Szeretnéd menteni a játékot? (i/n): ");
-    java.util.Scanner sc = new java.util.Scanner(System.in);
-    String valasz = sc.nextLine().trim().toLowerCase();
-
-    if (valasz.equals("i") || valasz.equals("igen")) {
-      String fajlnev = ui.bekerFajlnevet("Fájlnév (Enter = " + ALAP_FAJLNEV + "): ");
-      if (fileManager.ment(engine.getTabla(), fajlnev)) {
-        ui.sikerUzenet("Játék sikeresen mentve!");
-      } else {
-        ui.hibaUzenet("Mentés sikertelen!");
-      }
-    }
 
     ui.varjEnter();
     logger.info("Játék menet vége");

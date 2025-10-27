@@ -79,7 +79,8 @@ class BoardTest {
 
   @Test
   void vizszintesNyeresFelismeri() {
-    // Given - Lerakunk 4 X-et vízszintesen
+    // Given - Lerakunk 5 X-et vízszintesen
+    tabla.lerak(new Position(5, 1), 'X');
     tabla.lerak(new Position(5, 2), 'X');
     tabla.lerak(new Position(5, 3), 'X');
     tabla.lerak(new Position(5, 4), 'X');
@@ -92,7 +93,8 @@ class BoardTest {
 
   @Test
   void fuggolegesNyeresFelismeri() {
-    // Given - Lerakunk 4 O-t függőlegesen
+    // Given - Lerakunk 5 O-t függőlegesen
+    tabla.lerak(new Position(1, 5), 'O');
     tabla.lerak(new Position(2, 5), 'O');
     tabla.lerak(new Position(3, 5), 'O');
     tabla.lerak(new Position(4, 5), 'O');
@@ -104,7 +106,8 @@ class BoardTest {
 
   @Test
   void atlosNyeresFelismeri() {
-    // Given - Lerakunk 4 X-et átlósan
+    // Given - Lerakunk 5 X-et átlósan
+    tabla.lerak(new Position(1, 1), 'X');
     tabla.lerak(new Position(2, 2), 'X');
     tabla.lerak(new Position(3, 3), 'X');
     tabla.lerak(new Position(4, 4), 'X');
@@ -115,8 +118,9 @@ class BoardTest {
   }
 
   @Test
-  void haromEgymasMellettNemNyero() {
-    // Given - Csak 3 van egymás mellett
+  void negyEgymasMellettMegNemNyero() {
+    // Given - Csak 4 van egymás mellett
+    tabla.lerak(new Position(5, 2), 'X');
     tabla.lerak(new Position(5, 3), 'X');
     tabla.lerak(new Position(5, 4), 'X');
     tabla.lerak(new Position(5, 5), 'X');

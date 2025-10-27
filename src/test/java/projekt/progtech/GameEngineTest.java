@@ -1,10 +1,6 @@
 package projekt.progtech;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,16 +88,17 @@ class GameEngineTest {
 
   @Test
   void negyEgymasMellettGyozelmeSzamit() {
-    // Given - Lerakunk 4 X-et egymás mellé
+    // Update: most 5 egymás mellett szükséges a győzelemhez
     engine.lepes(new Position(5, 5)); // X
-    engine.lepes(new Position(6, 5)); // O (gép)
+    engine.lepes(new Position(6, 5)); // O
     engine.lepes(new Position(5, 4)); // X
     engine.lepes(new Position(6, 6)); // O
     engine.lepes(new Position(5, 3)); // X
     engine.lepes(new Position(7, 6)); // O
-    engine.lepes(new Position(5, 6)); // X - GYŐZELEM!
+    engine.lepes(new Position(5, 6)); // X
+    engine.lepes(new Position(7, 5)); // O
+    engine.lepes(new Position(5, 2)); // X - 5 vízszintesen: 2..6
 
-    // Then
     assertTrue(engine.isJatekVege());
     assertNotNull(engine.getGyoztes());
     assertEquals('X', engine.getGyoztes().getSzimbolum());
@@ -109,14 +106,18 @@ class GameEngineTest {
 
   @Test
   void jatekVegeUtanNemLehetTovabbLepni() {
-    // Given - Játék véget ér
+    // Given - Előbb hozzunk létre 5 egymás melletti X-et
     engine.lepes(new Position(5, 5)); // X
     engine.lepes(new Position(6, 5)); // O
     engine.lepes(new Position(5, 4)); // X
     engine.lepes(new Position(6, 6)); // O
     engine.lepes(new Position(5, 3)); // X
     engine.lepes(new Position(7, 6)); // O
-    engine.lepes(new Position(5, 6)); // X - GYŐZELEM!
+    engine.lepes(new Position(5, 6)); // X
+    engine.lepes(new Position(7, 5)); // O
+    engine.lepes(new Position(5, 2)); // X - 5 vízszintesen kész (2..6)
+
+    assertTrue(engine.isJatekVege());
 
     // When - Még egy lépést próbálunk
     boolean siker = engine.lepes(new Position(4, 5));
@@ -126,18 +127,20 @@ class GameEngineTest {
   }
   @Test
   void atloBalraLeNyeresFelismeri() {
-    // Given - Átló balra le (↙)
+    // Update: 5 átlósan balra le
     engine.lepes(new Position(5, 5)); // X
     engine.lepes(new Position(6, 5)); // O
     engine.lepes(new Position(4, 6)); // X
     engine.lepes(new Position(7, 5)); // O
-    engine.lepes(new Position(5, 7)); // X
-    engine.lepes(new Position(8, 5)); // O
     engine.lepes(new Position(6, 4)); // X
-    engine.lepes(new Position(3, 7)); // O
-    engine.lepes(new Position(7, 3)); // X - GYŐZELEM átlósan balra le
+    engine.lepes(new Position(8, 5)); // O
+    engine.lepes(new Position(3, 7)); // X
+    engine.lepes(new Position(2, 5)); // O
+    engine.lepes(new Position(7, 3)); // X
 
-    // Then
+    assertFalse(engine.isJatekVege());
+
+    engine.lepes(new Position(2, 8)); // X - 5 átló: (7,3),(6,4),(5,5),(4,6),(3,7) már megvan, bővítés
     assertTrue(engine.isJatekVege());
     assertEquals('X', engine.getGyoztes().getSzimbolum());
   }
@@ -200,3 +203,4 @@ class GameEngineTest {
     assertEquals('O', t.getMezo(oPoz));
   }
 }
+

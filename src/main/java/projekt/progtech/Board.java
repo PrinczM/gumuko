@@ -126,17 +126,17 @@ public class Board {
   }
 
   /**
-   * Ellenőrzi, hogy van-e nyerő a táblán (4 egymás mellett).
+   * Ellenőrzi, hogy van-e nyerő a táblán (5 egymás mellett).
    *
    * @param szimbolum melyik jelet keressük (X vagy O)
-   * @return true, ha van 4 egymás mellett
+   * @return true, ha van 5 egymás mellett
    */
   public boolean vanNyero(char szimbolum) {
     // Végigmegyünk minden mezőn
     for (int sor = 0; sor < sorokSzama; sor++) {
       for (int oszlop = 0; oszlop < oszlopokSzama; oszlop++) {
         if (tabla[sor][oszlop] == szimbolum) {
-          // Nézzük meg, hogy innen indulva van-e 4 egymás mellett
+          // Nézzük meg, hogy innen indulva van-e 5 egymás mellett
           if (vizsgalIrany(sor, oszlop, 0, 1, szimbolum)) {
             return true; // Vízszintes
           }
@@ -156,24 +156,25 @@ public class Board {
   }
 
   /**
-   * Segédfüggvény - egy irányba néz 4-et.
+   * Segédfüggvény - egy irányba néz 5-öt.
    *
    * @param kezdoSor    honnan indulunk
    * @param kezdoOszlop honnan indulunk
    * @param sorIrany    sor irányú lépés (-1, 0, vagy 1)
    * @param oszlopIrany oszlop irányú lépés (-1, 0, vagy 1)
    * @param szimbolum   mit keresünk
-   * @return true, ha van 4 egymás mellett
+   * @return true, ha van 5 egymás mellett
    */
   private boolean vizsgalIrany(int kezdoSor, int kezdoOszlop,
                                int sorIrany, int oszlopIrany,
                                char szimbolum) {
+    int nyeroHossz = 5;
     int db = 0;
     int sor = kezdoSor;
     int oszlop = kezdoOszlop;
 
-    // Nézzünk 4-et ebben az irányban
-    for (int i = 0; i < 4; i++) {
+    // Nézzünk 5-öt ebben az irányban
+    for (int i = 0; i < nyeroHossz; i++) {
       // Kilógunk a tábláról?
       if (sor < 0 || sor >= sorokSzama || oszlop < 0 || oszlop >= oszlopokSzama) {
         return false;
@@ -191,7 +192,7 @@ public class Board {
       oszlop += oszlopIrany;
     }
 
-    return db == 4;
+    return db == nyeroHossz;
   }
 
   /**

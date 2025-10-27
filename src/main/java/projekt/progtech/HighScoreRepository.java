@@ -90,7 +90,7 @@ public class HighScoreRepository {
     String sql = "SELECT player, result, rows, cols, moves, created_at " +
         "FROM highscore ORDER BY " +
         "CASE result WHEN 'WIN' THEN 0 WHEN 'DRAW' THEN 1 ELSE 2 END, " +
-        "moves ASC, created_at DESC LIMIT ?";
+        "moves ASC, created_at ASC LIMIT ?";
 
     List<HighScore> list = new ArrayList<>();
     try (Connection c = DriverManager.getConnection(jdbcUrl);

@@ -20,17 +20,19 @@ class HighScoreRepositoryTest {
 
   @Test
   void mentesEsTopRendezesMukodik() {
-    repo.ment(new HighScore("Alice", HighScore.Eredmeny.WIN, 10, 10, 12, LocalDateTime.now()));
-    repo.ment(new HighScore("Bob", HighScore.Eredmeny.DRAW, 10, 10, 11, LocalDateTime.now()));
-    repo.ment(new HighScore("Carol", HighScore.Eredmeny.LOSS, 10, 10, 9, LocalDateTime.now()));
-    repo.ment(new HighScore("Dave", HighScore.Eredmeny.WIN, 10, 10, 9, LocalDateTime.now()));
+    LocalDateTime t1 = LocalDateTime.now().minusMinutes(2);
+    LocalDateTime t2 = LocalDateTime.now().minusMinutes(1);
+    LocalDateTime t3 = LocalDateTime.now();
+    repo.ment(new HighScore("Alice", HighScore.Eredmeny.WIN, 10, 10, 12, t2));
+    repo.ment(new HighScore("Bob", HighScore.Eredmeny.DRAW, 10, 10, 11, t1));
+    repo.ment(new HighScore("Carol", HighScore.Eredmeny.LOSS, 10, 10, 9, t3));
+    repo.ment(new HighScore("Dave", HighScore.Eredmeny.WIN, 10, 10, 12, t1)); // ugyanannyi lépés mint Alice, régebbi
 
     List<HighScore> top = repo.lekerTop(10);
     assertFalse(top.isEmpty());
-    // WINs first, fewer moves earlier
+    // WINs first, kevesebb lépés elöl; azonos lépésnél régebbi előrébb
     assertEquals("Dave", top.get(0).getJatekosNev());
     assertEquals("Alice", top.get(1).getJatekosNev());
-    // DRAW then LOSS
     assertEquals(HighScore.Eredmeny.DRAW, top.get(2).getEredmeny());
     assertEquals(HighScore.Eredmeny.LOSS, top.get(3).getEredmeny());
   }

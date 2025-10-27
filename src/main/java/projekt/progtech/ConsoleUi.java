@@ -1,5 +1,6 @@
 package projekt.progtech;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import org.slf4j.Logger;
@@ -268,9 +269,16 @@ public class ConsoleUi {
     if (lista == null || lista.isEmpty()) {
       System.out.println("Nincs még bejegyzés.");
     } else {
-      int i = 1;
+      // Fejléc
+      System.out.printf("%-20s  %-11s  %-7s  %-5s  %-17s%n",
+          "player name", "table size", "moves", "res", "date");
+      System.out.println("-".repeat(65));
+      DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy.MM.dd. HH:mm");
       for (HighScore hs : lista) {
-        System.out.printf("%2d) %s%n", i++, hs.toString());
+        String meret = hs.getSorok() + "x" + hs.getOszlopok();
+        String datum = hs.getIdopont().format(fmt);
+        System.out.printf("%-20s  %-11s  %-7d  %-5s  %-17s%n",
+            hs.getJatekosNev(), meret, hs.getLepesekSzama(), hs.getEredmeny().name(), datum);
       }
     }
     System.out.println("══════════════════════════");
