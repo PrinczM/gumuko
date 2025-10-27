@@ -10,6 +10,7 @@ public class Main {
 
   private static final Logger logger = LoggerFactory.getLogger(Main.class);
   private static final String ALAP_FAJLNEV = "jatek.txt";
+  private static final String HS_DB_PATH = "./highscore";
 
   /**
    * Főprogram indítása.
@@ -22,6 +23,7 @@ public class Main {
     ConsoleUi ui = new ConsoleUi();
     FileManager fileManager = new FileManager();
     AiPlayer ai = new AiPlayer();
+    HighScoreRepository repo = new HighScoreRepository(HS_DB_PATH);
 
     ui.udvozles();
 
@@ -31,14 +33,13 @@ public class Main {
 
       switch (valasztas) {
         case 1:
-          ujJatek(ui, ai);
+          ujJatek(ui, ai, repo);
           break;
         case 2:
-          jatekBetoltese(ui, fileManager, ai);
+          jatekBetoltese(ui, fileManager, ai, repo);
           break;
         case 3:
-          // High Score - később implementáljuk
-          ui.hibaUzenet("High Score még nem elérhető (2. védés)");
+          ui.megjelenitHighScore(repo.lekerTop(20));
           ui.varjEnter();
           break;
         case 4:
@@ -57,20 +58,20 @@ public class Main {
   /**
    * Új játék indítása.
    */
-  private static void ujJatek(ConsoleUi ui, AiPlayer ai) {
+  private static void ujJatek(ConsoleUi ui, AiPlayer ai, HighScoreRepository repo) {
     String nev = ui.bekerNevet();
     int[] meretek = ui.bekerTablaMeretet();
 
     Board tabla = new Board(meretek[0], meretek[1]);
     GameEngine engine = new GameEngine(tabla, nev);
 
-    jatekMenet(ui, engine, ai, new FileManager());
+    jatekMenet(ui, engine, ai, new FileManager(), repo);
   }
 
   /**
    * Játék betöltése fájlból.
    */
-  private static void jatekBetoltese(ConsoleUi ui, FileManager fileManager, AiPlayer ai) {
+  private static void jatekBetoltese(ConsoleUi ui, FileManager fileManager, AiPlayer ai, HighScoreRepository repo) {
     String fajlnev = ui.bekerFajlnevet("Fájlnév (Enter = " + ALAP_FAJLNEV + "): ");
 
     Board tabla = fileManager.betolt(fajlnev);
@@ -84,14 +85,14 @@ public class Main {
     String nev = ui.bekerNevet();
 
     GameEngine engine = new GameEngine(tabla, nev);
-    jatekMenet(ui, engine, ai, fileManager);
+    jatekMenet(ui, engine, ai, fileManager, repo);
   }
 
   /**
    * Játék menetének kezelése.
    */
   private static void jatekMenet(ConsoleUi ui, GameEngine engine,
-                                 AiPlayer ai, FileManager fileManager) {
+                                 AiPlayer ai, FileManager fileManager, HighScoreRepository repo) {
     logger.info("Játék menet kezdődik");
 
     while (!engine.isJatekVege()) {
@@ -153,6 +154,24 @@ public class Main {
     } else {
       ui.dontetlen();
     }
+
+    // High score mentése
+    HighScore.Eredmeny eredmeny;
+    if (engine.getGyoztes() == null) {
+      eredmeny = HighScore.Eredmeny.DRAW;
+    } else if (engine.getGyoztes().isX()) {
+      eredmeny = HighScore.Eredmeny.WIN;
+    } else {
+      eredmeny = HighScore.Eredmeny.LOSS;
+    }
+    repo.ment(new HighScore(
+        engine.getHumanJatekos().getNev(),
+        eredmeny,
+        engine.getTabla().getSorokSzama(),
+        engine.getTabla().getOszlopokSzama(),
+        engine.getLepesekSzama(),
+        java.time.LocalDateTime.now()
+    ));
 
     // Mentés felajánlása
     System.out.println();

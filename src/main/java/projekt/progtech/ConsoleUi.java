@@ -1,5 +1,6 @@
 package projekt.progtech;
 
+import java.util.List;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,5 +255,25 @@ public class ConsoleUi {
    */
   public void close() {
     scanner.close();
+  }
+
+  /**
+   * High score lista megjelenítése.
+   *
+   * @param lista a high score lista
+   */
+  public void megjelenitHighScore(List<HighScore> lista) {
+    System.out.println();
+    System.out.println("══════ High Scores ══════");
+    if (lista == null || lista.isEmpty()) {
+      System.out.println("Nincs még bejegyzés.");
+    } else {
+      int i = 1;
+      for (HighScore hs : lista) {
+        System.out.printf("%2d) %s%n", i++, hs.toString());
+      }
+    }
+    System.out.println("══════════════════════════");
+    System.out.println();
   }
 }

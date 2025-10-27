@@ -165,4 +165,38 @@ class GameEngineTest {
     // Then
     assertNotEquals(elsoJatekos, masodikJatekos);
   }
+  @Test
+  void betoltottTablaEsetenNemKellKozepreLepni_EsXJonHaAzonosDarab() {
+    // Given: betöltött állapotot szimulálunk (X és O darab egyenlő)
+    Board t = new Board(10, 10);
+    t.lerak(new Position(5, 5), 'X');
+    t.lerak(new Position(5, 6), 'O');
+
+    GameEngine e = new GameEngine(t, "Teszt Játékos");
+
+    // When: X következik (azonos darab), lépünk nem középre, de érintkező helyre
+    Position nemKozep = new Position(5, 4); // X mellé
+    boolean siker = e.lepes(nemKozep);
+
+    // Then
+    assertTrue(siker);
+    assertEquals('X', t.getMezo(nemKozep));
+  }
+
+  @Test
+  void betoltottTablaEsetenOJonHaXDbEggyelTobb() {
+    // Given: X-ből eggyel több, így O következik
+    Board t = new Board(10, 10);
+    t.lerak(new Position(5, 5), 'X');
+
+    GameEngine e = new GameEngine(t, "Teszt Játékos");
+
+    // When: O lép (AI játékos szimbóluma), nem középre, de érintkező helyre
+    Position oPoz = new Position(5, 6); // X mellé
+    boolean siker = e.lepes(oPoz);
+
+    // Then
+    assertTrue(siker);
+    assertEquals('O', t.getMezo(oPoz));
+  }
 }
