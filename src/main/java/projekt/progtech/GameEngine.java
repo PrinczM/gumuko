@@ -1,7 +1,5 @@
 package projekt.progtech;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +17,7 @@ public class GameEngine {
   private boolean jatekVege;
   private Player gyoztes;
   private boolean elsoLepes;
+  private int lepesekSzama;
 
   /**
    * Konstruktor.
@@ -30,10 +29,14 @@ public class GameEngine {
     this.tabla = tabla;
     this.humanJatekos = new Player(humanNev, 'X');
     this.gepJatekos = new Player("Gép", 'O');
-    this.aktualisJatekos = humanJatekos; // Humán kezd
+    this.aktualisJatekos = humanJatekos; // alapértelmezetten humán kezd
     this.jatekVege = false;
     this.gyoztes = null;
     this.elsoLepes = true;
+    this.lepesekSzama = 0;
+
+    // Inicializáljuk az állapotot a táblán lévő jelek alapján (betöltött játék esetén fontos)
+    initAllapotTablaAlapjan();
   }
 
   /**
@@ -88,6 +91,15 @@ public class GameEngine {
    */
   public Player getGyoztes() {
     return gyoztes;
+  }
+
+  /**
+   * Visszaadja a lépések számát.
+   *
+   * @return lépések száma
+   */
+  public int getLepesekSzama() {
+    return lepesekSzama;
   }
 
   /**
@@ -173,6 +185,7 @@ public class GameEngine {
 
     // Lépés végrehajtása
     tabla.lerak(pozicio, aktualisJatekos.getSzimbolum());
+    lepesekSzama++;
     logger.info("{} lépett: {}", aktualisJatekos.getNev(), pozicio);
 
     elsoLepes = false;
@@ -196,5 +209,63 @@ public class GameEngine {
     aktualisJatekos = (aktualisJatekos == humanJatekos) ? gepJatekos : humanJatekos;
 
     return true;
+  }
+
+  /**
+   * Inicializálja az engine állapotát a tábla aktuális tartalma alapján.
+   * Betöltött játék folytatásánál ez biztosítja a helyes szabályok alkalmazását.
+   */
+  private void initAllapotTablaAlapjan() {
+    int xDb = 0;
+    int oDb = 0;
+    boolean vanValami = false;
+
+    for (int i = 0; i < tabla.getSorokSzama(); i++) {
+      for (int j = 0; j < tabla.getOszlopokSzama(); j++) {
+        char c = tabla.getMezo(new Position(i, j));
+        if (c == 'X') {
+          xDb++;
+          vanValami = true;
+        } else if (c == 'O') {
+          oDb++;
+          vanValami = true;
+        }
+      }
+    }
+
+    // Első lépés akkor, ha teljesen üres a tábla
+    this.elsoLepes = !vanValami;
+    // Eddigi lépések száma a táblán lévő jelek száma
+    this.lepesekSzama = xDb + oDb;
+
+    // Ki következik?
+    if (!elsoLepes) {
+      if (xDb == oDb) {
+        this.aktualisJatekos = humanJatekos; // X jön
+      } else if (xDb == oDb + 1) {
+        this.aktualisJatekos = gepJatekos; // O jön
+      } else {
+        logger.warn("Inkonzisztens tábla állapot (X={}, O={}). X következik alapértelmezetten.", xDb, oDb);
+        this.aktualisJatekos = humanJatekos;
+      }
+    } else {
+      // Üres tábla: X kezd
+      this.aktualisJatekos = humanJatekos;
+    }
+
+    // Ha már nyerő állapotban van a tábla (betöltéskor), azonnal zárjuk le a játékot
+    if (tabla.vanNyero('X')) {
+      this.jatekVege = true;
+      this.gyoztes = humanJatekos;
+      logger.info("Betöltött tábla X győztes állapotban van. A játék véget ért.");
+    } else if (tabla.vanNyero('O')) {
+      this.jatekVege = true;
+      this.gyoztes = gepJatekos;
+      logger.info("Betöltött tábla O győztes állapotban van. A játék véget ért.");
+    } else if (tabla.isTele()) {
+      this.jatekVege = true;
+      this.gyoztes = null;
+      logger.info("Betöltött tábla tele van. Döntetlen.");
+    }
   }
 }
