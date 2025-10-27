@@ -13,16 +13,6 @@ Ez egy kétszemélyes stratégiai táblajáték egy NxM-es táblán (alapból 10
 - A lerakott jelnek legalább diagonálisan érintkeznie kell a már fennlévőkkel (kivéve az első lépés)
 - A kezdő jel a tábla egyik középső mezőjére kerül; betöltött játék folytatásánál nincs középre kényszer
 
-**Mentés/betöltés:**
-- Fájlba mentés csak a játék menete közben érhető el (humán lépés előtt)
-- A játék végén (győzelem/döntetlen) fájlmentés nem lehetséges (automatikusan csak High Score kerül mentésre)
-- A mentés/betöltés formátuma: XML (ajánlott fájlnév: jatek.xml)
-
-**High Score:**
-- Az eredmények H2 adatbázisba mentődnek (lokális fájl)
-- A kilistázás olvasható táblázatban, oszlopokkal: player name | table size | moves | res | date
-- Dátum formátum: `yyyy.MM.dd. HH:mm` (pl. `2025.10.27. 19:53`)
-- Rendezés: WIN előre, majd DRAW, majd LOSS; kevesebb "moves" előrébb; azonos moves esetén a korábbi (régebbi) teljesítés előrébb
 
 ## 🛠️ Technológiák
 
@@ -84,7 +74,7 @@ target/site/jacoco/index.html
 - [x] AI ellenfél (alap random)
 - [x] Adatbázis integráció (H2)
 - [x] High Score tábla és rendezés
-- [x] Betöltött játék folytatása (helyes kör, nincs középre kényszer)
+- [x] XML mentés/betöltés
 
 ## 👨‍💻 Fejlesztő
 
@@ -94,7 +84,3 @@ Princz Márió
 
 Egyetemi projekt.
 
-**Használat közben:**
-- A humán játékosnál a lépés bevihető pl. `E5` formában
-- Ha menteni szeretnél és visszalépni a főmenübe, egyszerűen írd be: `save`
-- Mentés esetén a program rákérdez a fájlnévre (alap: `jatek.xml`), elmenti a táblát, majd visszalép a főmenübe
