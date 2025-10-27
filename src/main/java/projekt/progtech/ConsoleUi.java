@@ -32,7 +32,7 @@ public class ConsoleUi {
     System.out.println("║                                       ║");
     System.out.println("╚═══════════════════════════════════════╝");
     System.out.println();
-    System.out.println("Játékszabály: 4 jelet egymás mellé kell rakni!");
+    System.out.println("Játékszabály: 5 jelet egymás mellé kell rakni!");
     System.out.println("(vízszintesen, függőlegesen vagy átlósan)");
     System.out.println();
   }
@@ -104,6 +104,7 @@ public class ConsoleUi {
    * @param jatekos aktuális játékos
    * @return választott pozíció
    */
+  @SuppressWarnings("unused")
   public Position bekerLepes(Player jatekos) {
     System.out.println();
     System.out.println(jatekos.getNev() + " következik (" + jatekos.getSzimbolum() + ")");
@@ -130,6 +131,50 @@ public class ConsoleUi {
 
       } catch (Exception e) {
         System.out.println("Érvénytelen formátum! Használj pl. A5, B3 formát.");
+      }
+    }
+  }
+
+  /**
+   * Játékos lépésének vagy mentési kérésének bekérése.
+   * 'save' beírása esetén mentést kérünk.
+   */
+  public FelhasznaloiBevitel bekerLepesVagyMentes(Player jatekos) {
+    System.out.println();
+    System.out.println(jatekos.getNev() + " következik (" + jatekos.getSzimbolum() + ")");
+
+    while (true) {
+      System.out.print("Add meg a lépést (pl. A5), vagy írd: save: ");
+      String input = scanner.nextLine().trim();
+
+      if (input.isEmpty()) {
+        System.out.println("Üres bemenet! Próbáld újra.");
+        continue;
+      }
+
+      if (input.equalsIgnoreCase("save")) {
+        return new FelhasznaloiBevitel(true, null);
+      }
+
+      // Pozíció értelmezése
+      String upper = input.toUpperCase();
+      if (upper.length() < 2) {
+        System.out.println("Túl rövid bemenet! Próbáld újra.");
+        continue;
+      }
+      try {
+        char oszlopBetu = upper.charAt(0);
+        String sorSzoveg = upper.substring(1);
+
+        int oszlop = oszlopBetu - 'A';
+        int sor = Integer.parseInt(sorSzoveg) - 1;
+
+        Position pozicio = new Position(sor, oszlop);
+        logger.info("Játékos bevitele: {}", pozicio);
+        return new FelhasznaloiBevitel(false, pozicio);
+
+      } catch (Exception e) {
+        System.out.println("Érvénytelen formátum! Használj pl. A5, vagy írd: save.");
       }
     }
   }
@@ -206,7 +251,7 @@ public class ConsoleUi {
     String fajlnev = scanner.nextLine().trim();
 
     if (fajlnev.isEmpty()) {
-      fajlnev = "jatek.txt";
+      fajlnev = "jatek.xml";
     }
 
     return fajlnev;

@@ -14,7 +14,7 @@ class FileManagerTest {
 
   private FileManager fileManager;
   private Board tabla;
-  private String testFajl = "test_tabla.txt";
+  private final String testFajl = "test_tabla.xml";
 
   @BeforeEach
   void setUp() {
@@ -27,7 +27,10 @@ class FileManagerTest {
     // Teszt után törölni kell a létrehozott fájlt
     File fajl = new File(testFajl);
     if (fajl.exists()) {
-      fajl.delete();
+      boolean deleted = fajl.delete();
+      if (!deleted) {
+        fajl.deleteOnExit();
+      }
     }
   }
 
@@ -56,7 +59,7 @@ class FileManagerTest {
   @Test
   void nemLetezoFajlBetolteseNullVisszaadasa() {
     // When
-    Board eredmeny = fileManager.betolt("nemletezo.txt");
+    Board eredmeny = fileManager.betolt("nemletezo.xml");
 
     // Then
     assertNull(eredmeny);

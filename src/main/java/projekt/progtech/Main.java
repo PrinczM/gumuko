@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
   private static final Logger logger = LoggerFactory.getLogger(Main.class);
-  private static final String ALAP_FAJLNEV = "jatek.txt";
+  private static final String ALAP_FAJLNEV = "jatek.xml";
   private static final String HS_DB_PATH = "./highscore";
 
   /**
@@ -71,7 +71,11 @@ public class Main {
   /**
    * Játék betöltése fájlból.
    */
-  private static void jatekBetoltese(ConsoleUi ui, FileManager fileManager, AiPlayer ai, HighScoreRepository repo) {
+  private static void jatekBetoltese(
+      ConsoleUi ui,
+      FileManager fileManager,
+      AiPlayer ai,
+      HighScoreRepository repo) {
     String fajlnev = ui.bekerFajlnevet("Fájlnév (Enter = " + ALAP_FAJLNEV + "): ");
 
     Board tabla = fileManager.betolt(fajlnev);
@@ -101,28 +105,38 @@ public class Main {
       Player aktualis = engine.getAktualisJatekos();
 
       if (aktualis.isX()) {
-        // Felajánlunk mentést csak menet közben
-        System.out.print("Szeretnéd menteni a játékot most? (i/n): ");
-        java.util.Scanner scSave = new java.util.Scanner(System.in);
-        String v = scSave.nextLine().trim().toLowerCase();
-        if (v.equals("i") || v.equals("igen")) {
-          String fn = ui.bekerFajlnevet("Fájlnév (Enter = jatek.txt): ");
+        // Humán játékos: lépés E5 formátumban, vagy 'save' a mentéshez
+        FelhasznaloiBevitel bevitel = ui.bekerLepesVagyMentes(aktualis);
+        if (bevitel.isMentesKerese()) {
+          String fn = ui.bekerFajlnevet("Fájlnév (Enter = jatek.xml): ");
           if (fileManager.ment(engine.getTabla(), fn)) {
             ui.sikerUzenet("Játék sikeresen mentve!");
           } else {
             ui.hibaUzenet("Mentés sikertelen!");
           }
+          // Mentés után kilépünk a játék menetéből a főmenübe
+          return;
         }
 
         // Humán játékos lépése
         boolean sikeresLepes = false;
         while (!sikeresLepes) {
-          Position lepes = ui.bekerLepes(aktualis);
-
+          Position lepes = bevitel.getPozicio();
           sikeresLepes = engine.lepes(lepes);
 
           if (!sikeresLepes) {
             ui.hibaUzenet("Érvénytelen lépés! Próbáld újra.");
+            // új bevitel
+            bevitel = ui.bekerLepesVagyMentes(aktualis);
+            if (bevitel.isMentesKerese()) {
+              String fn2 = ui.bekerFajlnevet("Fájlnév (Enter = jatek.xml): ");
+              if (fileManager.ment(engine.getTabla(), fn2)) {
+                ui.sikerUzenet("Játék sikeresen mentve!");
+              } else {
+                ui.hibaUzenet("Mentés sikertelen!");
+              }
+              return;
+            }
           }
         }
       } else {
@@ -131,6 +145,7 @@ public class Main {
         System.out.println("Gép gondolkodik...");
 
         try {
+          // noinspection BusyWait
           Thread.sleep(1000); // Kicsit várunk
         } catch (InterruptedException e) {
           logger.error("Sleep interrupted", e);
@@ -165,7 +180,7 @@ public class Main {
       ui.dontetlen();
     }
 
-    // EREDMÉNY mentése HighScore-ba (automatikus) – de már nem ajánlunk fel fájlmentést
+    // EREDMÉNY mentése HighScore-ba (automatikus) – fájlmentést itt nem ajánlunk
     HighScore.Eredmeny eredmeny = (engine.getGyoztes() == null)
         ? HighScore.Eredmeny.DRAW
         : (engine.getGyoztes().isX() ? HighScore.Eredmeny.WIN : HighScore.Eredmeny.LOSS);

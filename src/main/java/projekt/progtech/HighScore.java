@@ -67,10 +67,10 @@ public class HighScore {
 
   @Override
   public String toString() {
-    return jatekosNev + ": " + eredmeny +
-        " on " + sorok + "x" + oszlopok +
-        ", moves=" + lepesekSzama +
-        ", at=" + idopont;
+    return jatekosNev + ": " + eredmeny
+        + " on " + sorok + "x" + oszlopok
+        + ", moves=" + lepesekSzama
+        + ", at=" + idopont;
   }
 
   @Override

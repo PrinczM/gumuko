@@ -62,6 +62,7 @@ public class GameEngine {
    *
    * @return gépi játékos
    */
+  @SuppressWarnings("unused")
   public Player getGepJatekos() {
     return gepJatekos;
   }
@@ -216,18 +217,18 @@ public class GameEngine {
    * Betöltött játék folytatásánál ez biztosítja a helyes szabályok alkalmazását.
    */
   private void initAllapotTablaAlapjan() {
-    int xDb = 0;
-    int oDb = 0;
+    int xdarab = 0;
+    int odarab = 0;
     boolean vanValami = false;
 
     for (int i = 0; i < tabla.getSorokSzama(); i++) {
       for (int j = 0; j < tabla.getOszlopokSzama(); j++) {
         char c = tabla.getMezo(new Position(i, j));
         if (c == 'X') {
-          xDb++;
+          xdarab++;
           vanValami = true;
         } else if (c == 'O') {
-          oDb++;
+          odarab++;
           vanValami = true;
         }
       }
@@ -236,16 +237,19 @@ public class GameEngine {
     // Első lépés akkor, ha teljesen üres a tábla
     this.elsoLepes = !vanValami;
     // Eddigi lépések száma a táblán lévő jelek száma
-    this.lepesekSzama = xDb + oDb;
+    this.lepesekSzama = xdarab + odarab;
 
     // Ki következik?
     if (!elsoLepes) {
-      if (xDb == oDb) {
+      if (xdarab == odarab) {
         this.aktualisJatekos = humanJatekos; // X jön
-      } else if (xDb == oDb + 1) {
+      } else if (xdarab == odarab + 1) {
         this.aktualisJatekos = gepJatekos; // O jön
       } else {
-        logger.warn("Inkonzisztens tábla állapot (X={}, O={}). X következik alapértelmezetten.", xDb, oDb);
+        logger.warn(
+            "Inkonzisztens tábla állapot (X={}, O={}). "
+                + "X következik alapértelmezetten.",
+            xdarab, odarab);
         this.aktualisJatekos = humanJatekos;
       }
     } else {

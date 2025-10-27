@@ -44,15 +44,16 @@ public class HighScoreRepository {
     initSchema();
   }
 
+  @SuppressWarnings("SqlNoDataSourceInspection")
   private void initSchema() {
-    String ddl = "CREATE TABLE IF NOT EXISTS highscore (" +
-        "id IDENTITY PRIMARY KEY, " +
-        "player VARCHAR(100) NOT NULL, " +
-        "result VARCHAR(10) NOT NULL, " +
-        "rows INT NOT NULL, " +
-        "cols INT NOT NULL, " +
-        "moves INT NOT NULL, " +
-        "created_at TIMESTAMP NOT NULL)";
+    String ddl = "CREATE TABLE IF NOT EXISTS highscore ("
+        + "id IDENTITY PRIMARY KEY, "
+        + "player VARCHAR(100) NOT NULL, "
+        + "result VARCHAR(10) NOT NULL, "
+        + "rows INT NOT NULL, "
+        + "cols INT NOT NULL, "
+        + "moves INT NOT NULL, "
+        + "created_at TIMESTAMP NOT NULL)";
 
     try (Connection c = DriverManager.getConnection(jdbcUrl);
          Statement st = c.createStatement()) {
@@ -66,9 +67,10 @@ public class HighScoreRepository {
   /**
    * Bejegyzés mentése.
    */
+  @SuppressWarnings("SqlNoDataSourceInspection")
   public void ment(HighScore score) {
-    String dml = "INSERT INTO highscore(player, result, rows, cols, moves, created_at) " +
-        "VALUES(?,?,?,?,?,?)";
+    String dml = "INSERT INTO highscore(player, result, rows, cols, moves, created_at) "
+        + "VALUES(?,?,?,?,?,?)";
     try (Connection c = DriverManager.getConnection(jdbcUrl);
          PreparedStatement ps = c.prepareStatement(dml)) {
       ps.setString(1, score.getJatekosNev());
@@ -86,11 +88,12 @@ public class HighScoreRepository {
   /**
    * Legjobb N bejegyzés visszaadása (elsősorban győzelmek, majd kevesebb lépés, majd újabb).
    */
+  @SuppressWarnings("SqlNoDataSourceInspection")
   public List<HighScore> lekerTop(int limit) {
-    String sql = "SELECT player, result, rows, cols, moves, created_at " +
-        "FROM highscore ORDER BY " +
-        "CASE result WHEN 'WIN' THEN 0 WHEN 'DRAW' THEN 1 ELSE 2 END, " +
-        "moves ASC, created_at ASC LIMIT ?";
+    String sql = "SELECT player, result, rows, cols, moves, created_at "
+        + "FROM highscore ORDER BY "
+        + "CASE result WHEN 'WIN' THEN 0 WHEN 'DRAW' THEN 1 ELSE 2 END, "
+        + "moves ASC, created_at ASC LIMIT ?";
 
     List<HighScore> list = new ArrayList<>();
     try (Connection c = DriverManager.getConnection(jdbcUrl);
