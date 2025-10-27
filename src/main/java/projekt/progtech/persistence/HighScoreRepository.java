@@ -1,4 +1,4 @@
-package projekt.progtech;
+package projekt.progtech.persistence;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import projekt.progtech.model.HighScore;
 
 /**
  * Egyszerű H2 alapú HighScore repository.

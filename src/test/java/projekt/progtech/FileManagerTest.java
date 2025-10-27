@@ -9,6 +9,9 @@ import java.io.File;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import projekt.progtech.model.Board;
+import projekt.progtech.model.Position;
+import projekt.progtech.persistence.FileManager;
 
 class FileManagerTest {
 

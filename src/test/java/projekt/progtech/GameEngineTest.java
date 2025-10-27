@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import projekt.progtech.engine.GameEngine;
+import projekt.progtech.model.Board;
+import projekt.progtech.model.Player;
+import projekt.progtech.model.Position;
 
 class GameEngineTest {
 
@@ -203,4 +207,3 @@ class GameEngineTest {
     assertEquals('O', t.getMezo(oPoz));
   }
 }
-

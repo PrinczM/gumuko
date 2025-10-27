@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
+import projekt.progtech.model.Board;
+import projekt.progtech.ui.ConsoleUi;
 
 /**
  * ConsoleUI egyszerű tesztjei.

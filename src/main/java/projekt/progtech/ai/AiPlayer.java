@@ -1,10 +1,12 @@
-package projekt.progtech;
+package projekt.progtech.ai;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import projekt.progtech.model.Board;
+import projekt.progtech.model.Position;
 
 /**
  * Gépi ellenfél (AI) osztály.

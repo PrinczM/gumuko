@@ -1,4 +1,6 @@
-package projekt.progtech;
+package projekt.progtech.ui;
+
+import projekt.progtech.model.Position;
 
 /**
  * Felhasználói bevitel modellje: vagy egy lépés pozíció, vagy mentési kérés.
@@ -33,4 +35,3 @@ public class FelhasznaloiBevitel {
     return pozicio;
   }
 }
-

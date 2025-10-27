@@ -1,10 +1,9 @@
 package projekt.progtech;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import projekt.progtech.model.Position;
 
 /**
  * Position osztály unit tesztjei.

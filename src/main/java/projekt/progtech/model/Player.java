@@ -1,4 +1,4 @@
-package projekt.progtech;
+package projekt.progtech.model;
 
 import java.util.Objects;
 

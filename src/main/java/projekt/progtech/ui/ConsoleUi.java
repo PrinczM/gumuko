@@ -1,10 +1,14 @@
-package projekt.progtech;
+package projekt.progtech.ui;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import projekt.progtech.model.Board;
+import projekt.progtech.model.HighScore;
+import projekt.progtech.model.Player;
+import projekt.progtech.model.Position;
 
 /**
  * Konzol alapú felhasználói felület.

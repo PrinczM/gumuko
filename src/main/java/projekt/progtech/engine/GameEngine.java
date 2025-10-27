@@ -1,7 +1,10 @@
-package projekt.progtech;
+package projekt.progtech.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import projekt.progtech.model.Board;
+import projekt.progtech.model.Player;
+import projekt.progtech.model.Position;
 
 /**
  * A játék logikáját kezelő osztály.

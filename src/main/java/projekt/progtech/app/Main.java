@@ -1,7 +1,19 @@
-package projekt.progtech;
+package projekt.progtech.app;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import projekt.progtech.ai.AiPlayer;
+import projekt.progtech.engine.GameEngine;
+import projekt.progtech.model.Board;
+import projekt.progtech.model.HighScore;
+import projekt.progtech.model.Player;
+import projekt.progtech.model.Position;
+import projekt.progtech.persistence.FileManager;
+import projekt.progtech.persistence.HighScoreRepository;
+import projekt.progtech.ui.ConsoleUi;
+import projekt.progtech.ui.FelhasznaloiBevitel;
+
+import java.io.File;
 
 /**
  * Az alkalmazás belépési pontja.
@@ -11,6 +23,7 @@ public class Main {
   private static final Logger logger = LoggerFactory.getLogger(Main.class);
   private static final String ALAP_FAJLNEV = "jatek.xml";
   private static final String HS_DB_PATH = "./highscore";
+  private static final String SAVE_DIR = "saves";
 
   /**
    * Főprogram indítása.
@@ -19,6 +32,9 @@ public class Main {
    */
   public static void main(String[] args) {
     logger.info("Amőba játék elindult");
+
+    // Mentések könyvtára biztosan létezzen
+    new File(SAVE_DIR).mkdirs();
 
     ConsoleUi ui = new ConsoleUi();
     FileManager fileManager = new FileManager();
@@ -65,7 +81,10 @@ public class Main {
     Board tabla = new Board(meretek[0], meretek[1]);
     GameEngine engine = new GameEngine(tabla, nev);
 
-    jatekMenet(ui, engine, ai, new FileManager(), repo);
+    // Mentési fájlnév kiválasztása: saves/jatek.xml, ha foglalt akkor jatek2.xml stb.
+    String mentesiFajl = kovetkezoMentettFajl();
+
+    jatekMenet(ui, engine, ai, new FileManager(), repo, mentesiFajl);
   }
 
   /**
@@ -78,7 +97,13 @@ public class Main {
       HighScoreRepository repo) {
     String fajlnev = ui.bekerFajlnevet("Fájlnév (Enter = " + ALAP_FAJLNEV + "): ");
 
-    Board tabla = fileManager.betolt(fajlnev);
+    // Ha relatív/egyszerű név, próbáljuk a saves könyvtárban
+    File f = new File(fajlnev);
+    if (!f.isAbsolute()) {
+      f = new File(SAVE_DIR, fajlnev);
+    }
+
+    Board tabla = fileManager.betolt(f.getPath());
     if (tabla == null) {
       ui.hibaUzenet("Nem sikerült betölteni a fájlt!");
       ui.varjEnter();
@@ -89,15 +114,17 @@ public class Main {
     String nev = ui.bekerNevet();
 
     GameEngine engine = new GameEngine(tabla, nev);
-    jatekMenet(ui, engine, ai, fileManager, repo);
+    // Betöltött játék további mentése ugyanarra a fájlra történik
+    jatekMenet(ui, engine, ai, fileManager, repo, f.getPath());
   }
 
   /**
-   * Játék menetének kezelése.
+   * Játék menetének kezelése automatikus mentéssel minden lépés után.
    */
   private static void jatekMenet(ConsoleUi ui, GameEngine engine,
-                                 AiPlayer ai, FileManager fileManager, HighScoreRepository repo) {
-    logger.info("Játék menet kezdődik");
+                                 AiPlayer ai, FileManager fileManager,
+                                 HighScoreRepository repo, String mentesiFajl) {
+    logger.info("Játék menet kezdődik (auto-mentés: {})", mentesiFajl);
 
     while (!engine.isJatekVege()) {
       ui.kiirTabla(engine.getTabla());
@@ -105,40 +132,17 @@ public class Main {
       Player aktualis = engine.getAktualisJatekos();
 
       if (aktualis.isX()) {
-        // Humán játékos: lépés E5 formátumban, vagy 'save' a mentéshez
-        FelhasznaloiBevitel bevitel = ui.bekerLepesVagyMentes(aktualis);
-        if (bevitel.isMentesKerese()) {
-          String fn = ui.bekerFajlnevet("Fájlnév (Enter = jatek.xml): ");
-          if (fileManager.ment(engine.getTabla(), fn)) {
-            ui.sikerUzenet("Játék sikeresen mentve!");
-          } else {
-            ui.hibaUzenet("Mentés sikertelen!");
-          }
-          // Mentés után kilépünk a játék menetéből a főmenübe
-          return;
-        }
-
-        // Humán játékos lépése
+        // Humán játékos: csak lépés megadása (nincs külön mentés parancs)
         boolean sikeresLepes = false;
         while (!sikeresLepes) {
-          Position lepes = bevitel.getPozicio();
+          Position lepes = ui.bekerLepes(aktualis);
           sikeresLepes = engine.lepes(lepes);
-
           if (!sikeresLepes) {
             ui.hibaUzenet("Érvénytelen lépés! Próbáld újra.");
-            // új bevitel
-            bevitel = ui.bekerLepesVagyMentes(aktualis);
-            if (bevitel.isMentesKerese()) {
-              String fn2 = ui.bekerFajlnevet("Fájlnév (Enter = jatek.xml): ");
-              if (fileManager.ment(engine.getTabla(), fn2)) {
-                ui.sikerUzenet("Játék sikeresen mentve!");
-              } else {
-                ui.hibaUzenet("Mentés sikertelen!");
-              }
-              return;
-            }
           }
         }
+        // Sikeres humán lépés után automatikus mentés
+        fileManager.ment(engine.getTabla(), mentesiFajl);
       } else {
         // AI játékos
         System.out.println();
@@ -168,6 +172,8 @@ public class Main {
         Position gepLepes = ai.generalLepes(engine.getTabla(), elsoLepes);
         engine.lepes(gepLepes);
         ui.gepLepese(gepLepes);
+        // AI lépés után automatikus mentés
+        fileManager.ment(engine.getTabla(), mentesiFajl);
       }
     }
 
@@ -180,7 +186,7 @@ public class Main {
       ui.dontetlen();
     }
 
-    // EREDMÉNY mentése HighScore-ba (automatikus) – fájlmentést itt nem ajánlunk
+    // EREDMÉNY mentése HighScore-ba (automatikus)
     HighScore.Eredmeny eredmeny = (engine.getGyoztes() == null)
         ? HighScore.Eredmeny.DRAW
         : (engine.getGyoztes().isX() ? HighScore.Eredmeny.WIN : HighScore.Eredmeny.LOSS);
@@ -193,8 +199,31 @@ public class Main {
         java.time.LocalDateTime.now()
     ));
 
-
     ui.varjEnter();
     logger.info("Játék menet vége");
+  }
+
+  /**
+   * Kiválasztja a következő elérhető mentési fájlnevet a saves mappában:
+   * jatek.xml, majd jatek2.xml, jatek3.xml, ...
+   */
+  private static String kovetkezoMentettFajl() {
+    File dir = new File(SAVE_DIR);
+    if (!dir.exists()) {
+      dir.mkdirs();
+    }
+    File elso = new File(dir, ALAP_FAJLNEV);
+    if (!elso.exists()) {
+      return elso.getPath();
+    }
+    String alapNev = ALAP_FAJLNEV.replace(".xml", "");
+    int i = 2;
+    while (true) {
+      File kov = new File(dir, alapNev + i + ".xml");
+      if (!kov.exists()) {
+        return kov.getPath();
+      }
+      i++;
+    }
   }
 }

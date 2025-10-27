@@ -1,4 +1,4 @@
-package projekt.progtech;
+package projekt.progtech.persistence;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import projekt.progtech.model.Board;
+import projekt.progtech.model.Position;
 
 /**
  * Fájlkezelésért felelős osztály - XML alapú mentés/betöltés.
