@@ -1,5 +1,6 @@
 package projekt.progtech.app;
 
+import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import projekt.progtech.ai.AiPlayer;
@@ -13,7 +14,6 @@ import projekt.progtech.persistence.HighScoreRepository;
 import projekt.progtech.ui.ConsoleUi;
 import projekt.progtech.ui.FelhasznaloiBevitel;
 
-import java.io.File;
 
 /**
  * Az alkalmazás belépési pontja.
@@ -84,7 +84,7 @@ public class Main {
     // Mentési fájlnév kiválasztása: saves/jatek.xml, ha foglalt akkor jatek2.xml stb.
     String mentesiFajl = kovetkezoMentettFajl();
 
-    jatekMenet(ui, engine, ai, new FileManager(), repo, mentesiFajl);
+    jatekMenet(ui, engine, ai, new FileManager(), repo, mentesiFajl, false);
   }
 
   /**
@@ -95,6 +95,26 @@ public class Main {
       FileManager fileManager,
       AiPlayer ai,
       HighScoreRepository repo) {
+
+    // Mentett játékok listázása
+    File saveDir = new File(SAVE_DIR);
+    String[] mentesek = saveDir.list((dir, name) -> name.endsWith(".xml"));
+
+    if (mentesek == null || mentesek.length == 0) {
+      ui.hibaUzenet("Nincs mentett játék a saves mappában!");
+      ui.varjEnter();
+      return;
+    }
+
+    System.out.println();
+    System.out.println("Elérhető mentések:");
+    System.out.println("-".repeat(30));
+    for (String mentes : mentesek) {
+      System.out.println("  - " + mentes);
+    }
+    System.out.println("-".repeat(30));
+    System.out.println();
+
     String fajlnev = ui.bekerFajlnevet("Fájlnév (Enter = " + ALAP_FAJLNEV + "): ");
 
     // Ha relatív/egyszerű név, próbáljuk a saves könyvtárban
@@ -115,16 +135,19 @@ public class Main {
 
     GameEngine engine = new GameEngine(tabla, nev);
     // Betöltött játék további mentése ugyanarra a fájlra történik
-    jatekMenet(ui, engine, ai, fileManager, repo, f.getPath());
+    jatekMenet(ui, engine, ai, fileManager, repo, f.getPath(), true);
   }
 
   /**
-   * Játék menetének kezelése automatikus mentéssel minden lépés után.
+   * Játék menetének kezelése.
+   *
+   * @param betoltottJatek true, ha betöltött játékot folytatunk
    */
   private static void jatekMenet(ConsoleUi ui, GameEngine engine,
                                  AiPlayer ai, FileManager fileManager,
-                                 HighScoreRepository repo, String mentesiFajl) {
-    logger.info("Játék menet kezdődik (auto-mentés: {})", mentesiFajl);
+                                 HighScoreRepository repo, String mentesiFajl,
+                                 boolean betoltottJatek) {
+    logger.info("Játék menet kezdődik (mentés: {})", mentesiFajl);
 
     while (!engine.isJatekVege()) {
       ui.kiirTabla(engine.getTabla());
@@ -132,17 +155,24 @@ public class Main {
       Player aktualis = engine.getAktualisJatekos();
 
       if (aktualis.isX()) {
-        // Humán játékos: csak lépés megadása (nincs külön mentés parancs)
+        // Humán játékos
         boolean sikeresLepes = false;
         while (!sikeresLepes) {
-          Position lepes = ui.bekerLepes(aktualis);
-          sikeresLepes = engine.lepes(lepes);
+          FelhasznaloiBevitel bevitel = ui.bekerLepesVagyMentes(aktualis);
+
+          if (bevitel.isMentesKerese()) {
+            // Mentés és kilépés a főmenübe
+            fileManager.ment(engine.getTabla(), mentesiFajl);
+            ui.sikerUzenet("Játék mentve: " + mentesiFajl);
+            logger.info("Játék mentve és kilépés: {}", mentesiFajl);
+            return; // Visszatérés a főmenübe
+          }
+
+          sikeresLepes = engine.lepes(bevitel.getPozicio());
           if (!sikeresLepes) {
             ui.hibaUzenet("Érvénytelen lépés! Próbáld újra.");
           }
         }
-        // Sikeres humán lépés után automatikus mentés
-        fileManager.ment(engine.getTabla(), mentesiFajl);
       } else {
         // AI játékos
         System.out.println();
@@ -172,8 +202,6 @@ public class Main {
         Position gepLepes = ai.generalLepes(engine.getTabla(), elsoLepes);
         engine.lepes(gepLepes);
         ui.gepLepese(gepLepes);
-        // AI lépés után automatikus mentés
-        fileManager.ment(engine.getTabla(), mentesiFajl);
       }
     }
 
@@ -182,22 +210,37 @@ public class Main {
 
     if (engine.getGyoztes() != null) {
       ui.gyoztesKihirdetese(engine.getGyoztes());
+
+      // Csak győzelem esetén mentjük a HighScore-ba (humán győzelem)
+      if (engine.getGyoztes().isX()) {
+        repo.ment(new HighScore(
+            engine.getHumanJatekos().getNev(),
+            HighScore.Eredmeny.WIN,
+            engine.getTabla().getSorokSzama(),
+            engine.getTabla().getOszlopokSzama(),
+            engine.getLepesekSzama(),
+            java.time.LocalDateTime.now()
+        ));
+      }
+
+      // Ha betöltött játékot nyertünk meg, töröljük a mentést
+      if (betoltottJatek) {
+        File mentettFajl = new File(mentesiFajl);
+        if (mentettFajl.exists() && mentettFajl.delete()) {
+          logger.info("Befejezett játék mentése törölve: {}", mentesiFajl);
+        }
+      }
     } else {
       ui.dontetlen();
     }
 
-    // EREDMÉNY mentése HighScore-ba (automatikus)
-    HighScore.Eredmeny eredmeny = (engine.getGyoztes() == null)
-        ? HighScore.Eredmeny.DRAW
-        : (engine.getGyoztes().isX() ? HighScore.Eredmeny.WIN : HighScore.Eredmeny.LOSS);
-    repo.ment(new HighScore(
-        engine.getHumanJatekos().getNev(),
-        eredmeny,
-        engine.getTabla().getSorokSzama(),
-        engine.getTabla().getOszlopokSzama(),
-        engine.getLepesekSzama(),
-        java.time.LocalDateTime.now()
-    ));
+    // Új játék esetén is töröljük a mentést, mert vége a játéknak
+    if (!betoltottJatek) {
+      File mentettFajl = new File(mentesiFajl);
+      if (mentettFajl.exists() && mentettFajl.delete()) {
+        logger.info("Befejezett játék mentése törölve: {}", mentesiFajl);
+      }
+    }
 
     ui.varjEnter();
     logger.info("Játék menet vége");

@@ -87,14 +87,15 @@ public class HighScoreRepository {
   }
 
   /**
-   * Legjobb N bejegyzés visszaadása (elsősorban győzelmek, majd kevesebb lépés, majd újabb).
+   * Legjobb N bejegyzés visszaadása.
+   * Rendezés: 1. győzelem, 2. kevesebb lépés, 3. nagyobb tábla, 4. korábbi dátum.
    */
   @SuppressWarnings("SqlNoDataSourceInspection")
   public List<HighScore> lekerTop(int limit) {
     String sql = "SELECT player, result, rows, cols, moves, created_at "
         + "FROM highscore ORDER BY "
         + "CASE result WHEN 'WIN' THEN 0 WHEN 'DRAW' THEN 1 ELSE 2 END, "
-        + "moves ASC, created_at ASC LIMIT ?";
+        + "moves ASC, (rows * cols) DESC, created_at ASC LIMIT ?";
 
     List<HighScore> list = new ArrayList<>();
     try (Connection c = DriverManager.getConnection(jdbcUrl);

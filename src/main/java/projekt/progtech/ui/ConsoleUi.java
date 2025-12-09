@@ -148,7 +148,7 @@ public class ConsoleUi {
     System.out.println(jatekos.getNev() + " következik (" + jatekos.getSzimbolum() + ")");
 
     while (true) {
-      System.out.print("Add meg a lépést (pl. A5), vagy írd: save: ");
+      System.out.print("Lépés (pl. A5) vagy 'save': ");
       String input = scanner.nextLine().trim();
 
       if (input.isEmpty()) {
@@ -314,23 +314,23 @@ public class ConsoleUi {
    */
   public void megjelenitHighScore(List<HighScore> lista) {
     System.out.println();
-    System.out.println("══════ High Scores ══════");
+    System.out.println("══════════════════════════ Highscore ═══════════════════════════");
     if (lista == null || lista.isEmpty()) {
       System.out.println("Nincs még bejegyzés.");
     } else {
       // Fejléc
-      System.out.printf("%-20s  %-11s  %-7s  %-5s  %-17s%n",
-          "player name", "table size", "moves", "res", "date");
-      System.out.println("-".repeat(65));
+      System.out.printf("%-20s  %-12s  %-8s  %-17s%n",
+          "Játékos neve", "Tábla méret", "Lépések", "Dátum");
+      System.out.println("-".repeat(60));
       DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy.MM.dd. HH:mm");
       for (HighScore hs : lista) {
         String meret = hs.getSorok() + "x" + hs.getOszlopok();
         String datum = hs.getIdopont().format(fmt);
-        System.out.printf("%-20s  %-11s  %-7d  %-5s  %-17s%n",
-            hs.getJatekosNev(), meret, hs.getLepesekSzama(), hs.getEredmeny().name(), datum);
+        System.out.printf("%-20s  %-12s  %-8d  %-17s%n",
+            hs.getJatekosNev(), meret, hs.getLepesekSzama(), datum);
       }
     }
-    System.out.println("══════════════════════════");
+    System.out.println("════════════════════════════════════════════════════════════════");
     System.out.println();
   }
 }

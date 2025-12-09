@@ -335,7 +335,6 @@
     </module>
     <module name="NoWhitespaceBeforeCaseDefaultColon"/>
     <module name="OverloadMethodsDeclarationOrder"/>
-    <module name="ConstructorsDeclarationGrouping"/>
     <module name="VariableDeclarationUsageDistance"/>
     <module name="CustomImportOrder">
       <property name="sortImportsInGroupAlphabetically" value="true"/>
@@ -345,8 +344,8 @@
     </module>
     <module name="MethodParamPad">
       <property name="tokens"
-               value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF, CTOR_CALL,
-                    SUPER_CTOR_CALL, ENUM_CONSTANT_DEF, RECORD_DEF, RECORD_PATTERN_DEF"/>
+               value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF,
+                    ENUM_CONSTANT_DEF, RECORD_DEF"/>
     </module>
     <module name="NoWhitespaceBefore">
       <property name="tokens"
@@ -366,7 +365,7 @@
                     EXPR, LITERAL_CATCH, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_NEW,
                     LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_WHILE, METHOD_CALL,
                     METHOD_DEF, QUESTION, RESOURCE_SPECIFICATION, SUPER_CTOR_CALL, LAMBDA,
-                    RECORD_DEF, RECORD_PATTERN_DEF"/>
+                    RECORD_DEF"/>
     </module>
     <module name="OperatorWrap">
       <property name="option" value="NL"/>
